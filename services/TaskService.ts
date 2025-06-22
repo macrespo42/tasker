@@ -1,26 +1,57 @@
+import rawTasks from "../tasks/tasks.json" with { type: "json" };
+
+type taskType = {
+  name: string;
+  status: string;
+};
+
+const tasks = rawTasks as Record<number, taskType>;
 class TaskService {
+  static relativeTaskPath = "./tasks/tasks.json";
+
+  static #saveTasks() {
+    Deno.writeTextFileSync(TaskService.relativeTaskPath, JSON.stringify(tasks));
+  }
+
   static add(name: string) {
-    console.log("Adding ", name);
+    tasks[Object.keys(tasks).length + 1] = {
+      name,
+      status: "todo",
+    };
+    TaskService.#saveTasks();
   }
 
   static delete(id: number) {
-    console.log("deleting", id);
+    delete tasks[id];
+    TaskService.#saveTasks();
   }
 
   static update(id: number, value: string) {
-    console.log(`updating task ${id} with with ${value}`);
+    const selectedTask = tasks[id];
+    if (selectedTask) {
+      selectedTask.name = value;
+    }
+    TaskService.#saveTasks();
   }
 
-  static markInProgress(id: number) {
-    console.log(`Set task ${id} as in progress`);
-  }
-
-  static markDone(id: number) {
-    console.log(`Set task ${id} as in done`);
+  static updateSatus(id: number, status: string) {
+    const selectedTask = tasks[id];
+    if (selectedTask) {
+      selectedTask.status = status;
+    }
+    TaskService.#saveTasks();
   }
 
   static list(type?: string) {
-    console.log("list tasks", type);
+    for (const key in tasks) {
+      if (!type) {
+        console.log(`${key}: ${tasks[key]?.name} ${tasks[key]?.status}`);
+      } else {
+        if (tasks[key]?.status === type) {
+          console.log(`${key}: ${tasks[key]?.name}`);
+        }
+      }
+    }
   }
 }
 

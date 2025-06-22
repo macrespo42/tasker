@@ -43,10 +43,10 @@ class InputService {
         TaskService.update(opts.id, opts.value);
         break;
       case "mark-in-progress":
-        TaskService.markInProgress(opts.id);
+        TaskService.updateSatus(opts.id, "in progress");
         break;
       case "markDone":
-        TaskService.markDone(opts.id);
+        TaskService.updateSatus(opts.id, "done");
         break;
       case "list":
         TaskService.list(opts.value);
